@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Groupes</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-glass px-3">
+    <a id="backBtn" class="navbar-brand text-white fw-bold" style="cursor:pointer">← Retour</a>
+
+    <div class="ms-auto">
+        <button class="btn btn-glass" onclick="logout()">Déconnexion</button>
+    </div>
+</nav>
+
+<script>
+document.getElementById("backBtn").onclick = () => history.back();
+</script>
+
+
+<nav class="navbar navbar-expand-lg navbar-glass px-3">
+    <a class="navbar-brand text-white fw-bold" href="index.html">Task&Group</a>
+    <!-- <button class="btn btn-glass ms-auto" onclick="logout()">Déconnexion</button> -->
+</nav>
+
+<div class="container mt-4">
+
+    <h1 class="page-title mb-4">Mes groupes</h1>
+
+    <div class="card-glass mb-4">
+        <h4>Créer un groupe</h4>
+        <div class="input-group mt-3">
+            <input id="groupName" class="form-control" placeholder="Nom du groupe">
+            <button class="btn btn-main" onclick="addGroup()">Créer</button>
+        </div>
+    </div>
+
+    <div class="card-glass">
+        <h4>Groupes</h4>
+        <table class="table table-glass mt-3 text-white">
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="groupList"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="static/app.js"></script>
+<script>
+async function loadGroups() {
+    const groups = await fetchGroups();
+    groupList.innerHTML = "";
+
+    groups.forEach(g => {
+        groupList.innerHTML += `
+            <tr>
+                <td>${g.name}</td>
+                <td>
+                    <a href="group.html?id=${g.id}" class="btn btn-glass btn-sm">Ouvrir</a>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function addGroup() {
+    const name = groupName.value;
+    if (!name) return;
+
+    await createGroup(name);
+    loadGroups();
+}
+
+loadGroups();
+</script>
+
+</body>
+</html>
