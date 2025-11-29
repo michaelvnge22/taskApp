@@ -1,12 +1,8 @@
-// -------------------------
-// API Helper
-// -------------------------
+// frontend/static/app.js
 const API_URL = "http://127.0.0.1:8000";
 
 async function api(method, url, body = null, auth = true) {
     const headers = { "Content-Type": "application/json" };
-
-    // include token if needed
     if (auth) {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -22,7 +18,6 @@ async function api(method, url, body = null, auth = true) {
         body: body ? JSON.stringify(body) : null,
     });
 
-    // token invalid → redirect
     if (res.status === 401) {
         localStorage.removeItem("token");
         window.location = "login.html";
@@ -32,69 +27,72 @@ async function api(method, url, body = null, auth = true) {
     return res;
 }
 
-// -------------------------
 // AUTH
-// -------------------------
 async function loginUser(email, password) {
     const res = await api("POST", "/auth/login", { email, password }, false);
     return res.json();
 }
-
 async function registerUser(username, email, password) {
     const res = await api("POST", "/auth/register", { username, email, password }, false);
     return res.json();
 }
 
-// -------------------------
 // GROUPS
-// -------------------------
 async function fetchGroups() {
-    return (await api("GET", "/groups/")).json();
+    const res = await api("GET", "/groups/");
+    return res ? res.json() : [];
 }
-
 async function createGroup(name) {
-    return (await api("POST", "/groups/", { name })).json();
+    const res = await api("POST", "/groups/", { name });
+    return res ? res.json() : null;
 }
-
 async function fetchGroup(id) {
-    return (await api("GET", `/groups/${id}`)).json();
+    const res = await api("GET", `/groups/${id}`);
+    return res ? res.json() : null;
 }
-
+async function fetchGroupMembers(id) {
+    const res = await api("GET", `/groups/${id}/members`);
+    return res ? res.json() : [];
+}
+async function generateInvite(groupId) {
+    const res = await api("POST", `/groups/${groupId}/invite`);
+    return res ? res.json() : null;
+}
+async function removeMember(groupId, userId) {
+    const res = await api("DELETE", `/groups/${groupId}/members/${userId}`);
+    return res ? res.json() : null;
+}
 async function joinGroupByToken(token) {
-    return (await api("GET", `/groups/join/${token}`)).json();
+    const res = await api("GET", `/groups/join/${token}`);
+    return res ? res.json() : null;
 }
 
-// -------------------------
 // TASKS
-// -------------------------
-// 👉 Correction importante : bonne route = /tasks/group/{groupId}
 async function fetchGroupTasks(groupId) {
-    return (await api("GET", `/tasks/group/${groupId}`)).json();
+    const res = await api("GET", `/tasks/group/${groupId}`);
+    return res ? res.json() : [];
 }
-
-// 👉 Create Task correctly with POST /tasks/
-async function createTask(groupId, title, description = "", deadline = null) {
-    return (
-        await api("POST", `/tasks/`, {
-            title,
-            description,
-            deadline,
-            group_id: groupId
-        })
-    ).json();
+async function createTask(groupId, title, description = "", deadline = null, status = "todo") {
+    const body = {
+        title,
+        description,
+        deadline,
+        status,
+        group_id: Number(groupId)
+    };
+    const res = await api("POST", `/tasks/`, body);
+    return res ? res.json() : null;
 }
-
 async function updateTask(taskId, data) {
-    return (await api("PUT", `/tasks/${taskId}`, data)).json();
+    const res = await api("PUT", `/tasks/${taskId}`, data);
+    return res ? res.json() : null;
 }
-
 async function deleteTask(taskId) {
-    return (await api("DELETE", `/tasks/${taskId}`)).json();
+    const res = await api("DELETE", `/tasks/${taskId}`);
+    return res ? res.json() : null;
 }
 
-// -------------------------
 // LOGOUT
-// -------------------------
 function logout() {
     localStorage.removeItem("token");
     window.location = "login.html";

@@ -15,7 +15,8 @@ class UserCreate(BaseModel):
 
 class UserResponse(UserBase):
     id: int
-
+    username: str
+    
     class Config:
         orm_mode = True
 
@@ -37,6 +38,22 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     user_id: Optional[int] = None
 
+
+# -----------------------------
+# MEMBERSHIP
+# -----------------------------
+class MemberResponseSimple(BaseModel):
+    id: int
+    user_id: int
+    username: str
+    email: str
+    role: str
+    #group_id: int
+
+    class Config:
+        orm_mode = True
+
+
 # -----------------------------
 # GROUP SCHEMAS
 # -----------------------------
@@ -48,20 +65,14 @@ class GroupCreate(GroupBase):
 
 class GroupResponse(GroupBase):
     id: int
+    owner_id: Optional[int] = None
 
     class Config:
         orm_mode = True
 
-# -----------------------------
-# MEMBERSHIP
-# -----------------------------
-class MemberResponse(BaseModel):
-    id: int
-    user_id: int
-    group_id: int
+class GroupDetailResponse(GroupResponse):
+    members: List[MemberResponseSimple] = []
 
-    class Config:
-        orm_mode = True
 
 # -----------------------------
 # INVITE SCHEMAS
@@ -84,7 +95,7 @@ class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
     deadline: Optional[date] = None
-    status: Optional[str] = "pending"
+    status: Optional[str] = "todo"
 
 class TaskCreate(TaskBase):
     group_id: Optional[int] = None
@@ -94,6 +105,7 @@ class TaskUpdate(BaseModel):
     description: Optional[str] = None
     deadline: Optional[date] = None
     status: Optional[str] = None
+    group_id: Optional[int] = None
 
 class TaskResponse(TaskBase):
     id: int
@@ -102,4 +114,4 @@ class TaskResponse(TaskBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True

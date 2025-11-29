@@ -67,7 +67,7 @@ input, select {
 
 /* ----- BUTTONS ----- */
 .btn-glass {
-    background: rgba(255,255,255,0.2) !important;
+    background: rgba(236, 121, 121, 0.2) !important;
     backdrop-filter: blur(5px);
     border-radius: 12px;
     color: #fff !important;
@@ -75,3 +75,8 @@ input, select {
 .btn-glass:hover {
     background: rgba(255,255,255,0.35) !important;
 }
+
+
+/* Simple modal (fallback) */
+.modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow:auto; background: rgba(0,0,0,0.5); padding-top: 60px; }
+.modal-dialog { margin: 5% auto; max-width: 600px; }

@@ -14,12 +14,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inclure d'abord les routers (API)
+# include APIs first
 app.include_router(auths.router)
 app.include_router(users.router)
 app.include_router(groups.router)
 app.include_router(tasks.router)
 
-# Puis monter les fichiers statiques (frontend) en dernier
-# Cela évite que le StaticFiles n'intercepte les requêtes API.
+# mount frontend after routers so API routes are not intercepted by static files
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
